@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model ListaTarefa {
+  id         String   @id @default(uuid())
+  titulo     String
+  tarefas    Tarefa[]
+  usuarioId  String 
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model Tarefa {
+  id         String        @id @default(uuid())
+  titulo     String
+  criada     DateTime
+  atualizada DateTime      @updatedAt @default(now())
+  prazo      DateTime?
+  concluida  Boolean       @default(false)
+  listaId    String?
+  lista      ListaTarefa?  @relation(fields: [listaId], references: [id])
+  usuarioId  String
+  usuario    Usuario       @relation(fields: [usuarioId], references: [id])
+}
+
+model Usuario {
+  id      String @id @default(uuid())
+  nome    String
+  email   String @unique
+  tarefas Tarefa[]
+  listas  ListaTarefa[]
+}
